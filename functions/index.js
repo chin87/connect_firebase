@@ -68,3 +68,33 @@ exports.write = functions.database.ref().onWrite(handler => {
                 console.log("Error sending message:", error);
             }); */
 });
+
+exports.hourly_job =
+  functions.pubsub.topic('hourly-tick').onPublish((event) => {
+    console.log("This job is ran every hour!")
+    //sendNotification();
+  });
+
+  exports.test_job =
+  functions.pubsub.topic('test-tick').onPublish((event) => {
+    console.log("job running every minute!")
+    sendNotification();
+  });
+
+  function sendNotification(){
+
+    const payload = {
+      notification: {
+        title: 'You have a new message!',
+      }
+    };
+
+    admin.messaging().sendToTopic("connect",payload)
+    .then(function(response) {
+        console.log("Successfully sent message:", response);
+        return 0;
+      })
+      .catch(function(error) {
+        console.log("Error sending message:", error);
+      });
+  }
